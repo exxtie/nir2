@@ -54,6 +54,7 @@ def dbCreate(dbName):
     cur.close()
     con.close()
 
+
 ### Удаление пробелов перед словом
 def frontSpaceDel(strk):
     # Удаление начальных пробелов
@@ -62,6 +63,8 @@ def frontSpaceDel(strk):
             strk = strk[1:]
         if (ch.isalpha() or ch == '_'):
             break
+    return strk
+
 
 ### Удаление пробелов после слова до конца строки
 def backSpaceDel(strk):
@@ -71,13 +74,15 @@ def backSpaceDel(strk):
             strk = strk[:-1]
         if (ch.isalpha() or ch == '_'):
             break
+    return strk
 
                                                     # Не факт, что нужно
                                                     # Потом посмотреть
 ### Удаление пробелов до слова и после слова
 def fullSpaceDel(strk):
-    frontSpaceDel(strk)
-    backSpaceDel(strk)
+    strk = frontSpaceDel(strk)
+    strk = backSpaceDel(strk)
+    return strk
 
 ### Вывод указанных полей
 def showFields(fields):
@@ -116,6 +121,10 @@ def menu():
     print('4) Задание условия отбора.')
     print('0) Завершение работы с программой.')
     res = input('Выберите действие: ')
+    
+    # Удаление пробелов в начале и конце строки
+    res = fullSpaceDel(res)
+    
     print('')
     return res
 
@@ -133,6 +142,10 @@ def subMenu():
     print('4) Удаление подмножества')
     print('0) Вернуться в главное меню')
     res = input('Выберите действие: ')
+
+    # Удаление пробелов в начале и конце строки
+    res = fullSpaceDel(res)
+    
     print('')
     return res
 
@@ -242,13 +255,32 @@ def addRow(dbName):
     
     # Ввод необходимых полей
     code = input('Введите код дисциплины по учебному плану: ')
+    code = fullSpaceDel(code)
+    
     subject = input('Введите название дисциплины: ')
+    subject = fullSpaceDel(subject)
+    
     sem_number = int(input('Введите номер семестра с аттестацией по дисциплине: '))
+    
     type_of_cert = input('Введите тип аттестации (экзамен/зачет): ')
+    type_of_cert = fullSpaceDel(type_of_cert)
+    
     date_of_cert = input('Введите дату аттестации (в формате ДД-ММ-ГГГГ): ')
+    date_of_cert = fullSpaceDel(date_of_cert)
+    
     prof_fio = input('Введите ФИО преподавателя, проводившего аттестацию: ')
+    prof_fio = fullSpaceDel(prof_fio)
+    
     prof_pos = input('Введите должность преподавателя: ')
-    mark = int(input('Введите полученную оценку: '))
+    prof_pos = fullSpaceDel(prof_pos)
+
+    while True:
+        mark = int(input('Введите полученную оценку: '))
+
+        if (mark < 0 or mark > 5):
+            print('Неверная оценка! Оценка должна находиться в диапазоне от 0 до 5!')
+        else:
+            break
     
     # Получение даты занесения записи
     dat = time.localtime()
@@ -288,7 +320,7 @@ def checkField(dbName, str_field):
 Возвращаемый результат функции: значение True, если указанное поле имеется в таблице иначе значение False"""
     
     # Удаление начальных пробелов (подготовка к проверке на соответствие поля)
-    frontSpaceDel(str_field)
+    str_field = fullSpaceDel(str_field)
             
     # Получение имен полей таблицы
     right_fields = fieldNames(dbName)
@@ -448,6 +480,10 @@ print('')
 
 while True:
     dbcrt = input('Хотите создать новую БД? (Y - да; N - нет): ')
+    
+    # Удаление пробелов в начале и конце строки
+    dbcrt = fullSpaceDel(dbcrt)
+    
     if (dbcrt.upper() == 'Y' or dbcrt.upper() == 'N'):
         break
     
@@ -461,12 +497,20 @@ while True:
 
 if (dbcrt.upper() == 'Y'):
     my_dbName = input('Введите имя новой БД: ')
+    
+    # Удаление пробелов в начале и конце строки
+    my_dbName = fullSpaceDel(my_dbName)
+    
     dbCreate(my_dbName)
     print('БД "{}" создана.'.format(my_dbName))
 
 else:
     while True:
         my_dbName = input('Введите имя существующей БД: ')
+        
+        # Удаление пробелов в начале и конце строки
+        my_dbName = fullSpaceDel(my_dbName)
+        
         if (os.path.isfile(my_dbName)):
             break
 
