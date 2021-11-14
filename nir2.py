@@ -20,13 +20,51 @@ os.chdir('C:\\PO_AS\\NIR\\part2')
 
 
 # Название таблицы
-tblname = 'stud'
+TBL_NAME = 'stud'
 
 # Вспомогательные функции
 #****************************************
 
+def frontSpaceDel(strk):
+    """Удаление пробелов в начале строки
+Входной аргумент: строка, из которой надо удалить начальные пробелы
+Возвращаемый результат функции: исходная строка без начальных пробелов"""
+    
+    # Удаление начальных пробелов
+    for ch in strk:
+        if (ch == ' '):
+            strk = strk[1:]
+        if (ch.isalpha() or ch == '_' or ch.isdigit()):
+            break
+    return strk
+
+
+def backSpaceDel(strk):
+    """Удаление пробелов в конце строки
+Входной аргумент: строка, из которой надо удалить конечные пробелы
+Возвращаемый результат функции: исходная строка без конечных пробелов"""
+    
+    # Удаление заключительных пробелов
+    for ch in reversed(strk):
+        if (ch == ' '):
+            strk = strk[:-1]
+        if (ch.isalpha() or ch == '_' or ch.isdigit()):
+            break
+    return strk
+
+
+def fullSpaceDel(strk):
+    """Удаление пробелов в начале и конце строки
+Входной аргумент: строка, из которой надо удалить начальные и конечные пробелы
+Возвращаемый результат функции: исходная строка без начальных и конечных пробелов"""
+    
+    strk = frontSpaceDel(strk)
+    strk = backSpaceDel(strk)
+    return strk
+
+
 def checkField(dbName, str_field):
-    """Проверека введенного имени поля на соответствие полям таблицы
+    """Проверка введенного имени поля на соответствие полям таблицы
 Входные аргументы: имя БД; имя поля для проверки
 Возвращаемый результат функции: значение True, если указанное поле имеется в таблице иначе значение False"""
     
@@ -47,51 +85,15 @@ def checkField(dbName, str_field):
     return field in right_fields #True если принадлежит
 
 
-def frontSpaceDel(strk):
-    """Удаление пробелов в начале строки
-Входной аргумент: строка, из которой надо удалить начальные пробелы
-Возвращаемый результат функции: исходная строка без начальных пробелов"""
-    
-    # Удаление начальных пробелов
-    for ch in strk:
-        if (ch == ' '):
-            strk = strk[1:]
-        if (ch.isalpha() or ch == '_'):
-            break
-    return strk
-
-
-def backSpaceDel(strk):
-    """Удаление пробелов в конце строки
-Входной аргумент: строка, из которой надо удалить конечные пробелы
-Возвращаемый результат функции: исходная строка без конечных пробелов"""
-    
-    # Удаление заключительных пробелов
-    for ch in reversed(strk):
-        if (ch == ' '):
-            strk = strk[:-1]
-        if (ch.isalpha() or ch == '_'):
-            break
-    return strk
-
-
-def fullSpaceDel(strk):
-    """Удаление пробелов в начале и конце строки
-Входной аргумент: строка, из которой надо удалить начальные и конечные пробелы
-Возвращаемый результат функции: исходная строка без начальных и конечных пробелов"""
-    
-    strk = frontSpaceDel(strk)
-    strk = backSpaceDel(strk)
-    return strk
 
 def showFields(fields):
     """Вывод имен указанных полей на экран
 Входной аргумент: список имен полей для вывода
 В результате работы функции на экран выводится заголовок таблицы БД"""
     
-    print('{:^10} | {:^30} | {:^10} | {:^12} | {:^12} | {:^30} | {:^15} | {:^4} | {:^15}'.format(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], fields[8]))
-    for i in range(23): # В сумме 161
-        print('-------', end = '')
+    print('{:^10} | {:^30} | {:^10} | {:^12} | {:^12} | {:^30} | {:^21} | {:^4} | {:^15}'.format(fields[0], fields[1], fields[2], fields[3], fields[4], fields[5], fields[6], fields[7], fields[8]))
+    for i in range(21): # В сумме 168
+        print('--------', end = '')
     print('')
 
 
@@ -101,7 +103,7 @@ def showData(data):
 В результате работы функции на экран выводится содержимое таблицы БД"""
     
     for di in data:
-        print('{:^10} | {:^30} | {:^10} | {:^12} | {:^12} | {:^30} | {:^15} | {:^4} | {:^15}'.format(di[0], di[1], di[2], di[3], di[4], di[5], di[6], di[7], di[8]))
+        print('{:^10} | {:^30} | {:^10} | {:^12} | {:^12} | {:^30} | {:^21} | {:^4} | {:^15}'.format(di[0], di[1], di[2], di[3], di[4], di[5], di[6], di[7], di[8]))
     
     print('')
 
@@ -119,7 +121,7 @@ def fieldNames(dbName):
     
     # Формирование строки с SQL-запросомом
     sql = """\
-SELECT * FROM {}""".format(tblname)
+SELECT * FROM {}""".format(TBL_NAME)
     
     # Исполнение запроса
     cur.execute(sql)
@@ -147,7 +149,7 @@ def dbData(dbName):
     cur = con.cursor()
 
     # Получание содержимого таблицы
-    sql = 'SELECT * FROM {}'.format(tblname)
+    sql = 'SELECT * FROM {}'.format(TBL_NAME)
     data = cur.execute(sql).fetchall()
 
     # Закрытие БД
@@ -178,7 +180,7 @@ def dbCreate(dbName):
 
     # Формирование SQL-запроса
     sql = """\
-    CREATE TABLE stud (code TEXT,
+    CREATE TABLE {} (code TEXT,
     subject TEXT,
     sem_number INTEGER,
     type_of_cert TEXT,
@@ -187,7 +189,7 @@ def dbCreate(dbName):
     prof_pos TEXT,
     mark INTEGER,
     date_of_update DATE);
-    """
+    """.format(TBL_NAME)
 
     # Выполнение запроса
     cur.executescript(sql)
@@ -203,10 +205,10 @@ def menu():
     
     print('')
     print('Меню:')
-    print('1) Отображение текущуго содержимого БД на экране в виде таблицы.')
+    print('1) Отображение текущего содержимого БД на экране в виде таблицы.')
     print('2) Сохранение таблицы в текстовый файл с задаваемым именем.')
-    print('3) Добавление строки в БД')
-    print('4) Задание условия отбора.')
+    print('3) Добавление строки в БД.')
+    print('4) Работа с подмножеством строк.')
     print('0) Завершение работы с программой.')
     res = input('Выберите действие: ')
     
@@ -219,10 +221,10 @@ def menu():
 
 def subMenu():
     """Вывод второго уровня меню и выбор действия
-Возвращаемый результат функции: выбранное пользователеме действие в данном меню"""
+Возвращаемый результат функции: выбранное пользователем действие в данном меню"""
     
     print('')
-    print('Задание условия отбора')
+    print('Меню работы с подмножеством строк:')
     print('1) Ввод условия')
     print('2) Просмотр подмножества')
     print('3) Замена значений подмножества')
@@ -331,7 +333,7 @@ def addRow(dbName):
 INSERT INTO {} 
 (code, subject, sem_number, type_of_cert, date_of_cert, prof_fio, prof_pos, mark, date_of_update) 
 VALUES (?,?,?,?,?,?,?,?,?)
-""".format(tblname)
+""".format(TBL_NAME)
 
     # Занесение полученного кортежа в таблицу
     cur.execute(sql, new_data)
@@ -348,7 +350,7 @@ VALUES (?,?,?,?,?,?,?,?,?)
     
 
 def condEnter(dbName):
-    """Ввод условия отброа подмножества
+    """Ввод условия отбора подмножества
 Входной аргумент: имя БД
 Возвращаемый результат функции: строка, содержащая условие отбора подмножества таблицы БД"""
     
@@ -372,7 +374,7 @@ def condEnter(dbName):
 def showSubTable(dbName, cond):
     """ Отображение подмножества строк, удовлетворяющих заданному условию
 Входные аргументы: имя БД; условие для отбора подмножества строк таблицы
-В результате работы функции на экран будет выведена шапка таблицы и подмножество строк, удволетворяющих заданному условию"""
+В результате работы функции на экран будет выведена шапка таблицы и подмножество строк, удовлетворяющих заданному условию"""
     
     # Проверка наличия условия
     if (cond == ''):
@@ -384,7 +386,7 @@ def showSubTable(dbName, cond):
     cur = con.cursor()
 
     # Создание SQL-запроса
-    sql = 'SELECT * FROM {0} WHERE {1}'.format(tblname, cond)
+    sql = 'SELECT * FROM {0} WHERE {1}'.format(TBL_NAME, cond)
 
     # Получение данных из таблицы
     data = cur.execute(sql).fetchall()
@@ -432,17 +434,15 @@ def updateValues(dbName, cond):
 
 
     # Создание SQL-запроса
-    sql = 'UPDATE {0} SET {1} WHERE {2}'.format(tblname, new_val, cond)
+    sql = 'UPDATE {0} SET {1} WHERE {2}'.format(TBL_NAME, new_val, cond)
     cur.execute(sql)
 
     # Получение даты обновления записи
     dat = time.localtime()
     date_of_update = '{:0>2}-{:0>2}-{:0>4}'.format(str(dat.tm_mday), str(dat.tm_mon), str(dat.tm_year))
 
-    print('Дата ', date_of_update)
-
     # Создание SQL-запроса
-    sql = 'UPDATE {0} SET date_of_update="{1}" WHERE {2}'.format(tblname, date_of_update, cond)
+    sql = 'UPDATE {0} SET date_of_update="{1}" WHERE {2}'.format(TBL_NAME, date_of_update, cond)
     cur.execute(sql)
 
     # Сохранение изменений
@@ -454,7 +454,7 @@ def updateValues(dbName, cond):
 
     print('Значения подмножества изменены')
 
-    tableDisplay(dbName)
+    showSubTable(dbName, cond)
     
 
 def delRows(dbName, cond):
@@ -472,7 +472,7 @@ def delRows(dbName, cond):
     cur = con.cursor()
 
     # Создание SQL-запроса
-    sql = 'DELETE FROM {0} WHERE {1}'.format(tblname, cond)
+    sql = 'DELETE FROM {0} WHERE {1}'.format(TBL_NAME, cond)
 
     cur.execute(sql)
 
